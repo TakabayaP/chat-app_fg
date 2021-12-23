@@ -10,6 +10,7 @@ remove：削除（ファイル）
 feature ブランチで作業し main に統合する
 
 # Arch
+```
 yay -S postgresql
 sudo -iu postgres
 su
@@ -23,3 +24,4 @@ createdb ユーザー名
 createdb chat
 psql -f setup.sql -d chat
 //データベースの権限周りが全然わからん 適当
+```
