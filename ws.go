@@ -40,6 +40,7 @@ func handleMessages() {
 				client.Close()
 				delete(clients, client)
 				panic(err)
+
 			}
 		}
 	}
