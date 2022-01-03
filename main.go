@@ -16,16 +16,17 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	return
 }
 
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", index)
+	mux.HandleFunc("/chatrooms",handleChatroomSelect)
 	mux.HandleFunc("/chat", chat)
 	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		handleWs(w, r)
 	})
+
 	go handleMessages()
 	server := &http.Server{
 		Addr:    "0.0.0.0:8080",
