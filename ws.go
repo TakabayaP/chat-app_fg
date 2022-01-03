@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -24,6 +25,8 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		var chat Chat
 		err := conn.ReadJSON(&chat)
 		fmt.Println(chat)
+		chat.CreatedAt = time.Now()
+		chat.Create()
 		if err != nil {
 			delete(clients, conn)
 			panic(err)
@@ -31,6 +34,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		broadcast <- chat
 	}
 }
+
 func handleMessages() {
 	for {
 		message := <-broadcast
