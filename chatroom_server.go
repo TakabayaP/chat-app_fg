@@ -45,20 +45,7 @@ func createUUID() (uuid string) {
 
 func handleChatroomSelect(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		rows, err := Db.Query("SELECT id, uuid, name FROM chatrooms ORDER BY id ASC")
-		var rooms []Chatroom
-		if err != nil {
-			panic(err)
-		}
-		for rows.Next() {
-			room := Chatroom{}
-			err = rows.Scan(&room.Id, &room.Uuid, &room.Name)
-			if err != nil {
-				panic(err)
-			}
-			rooms = append(rooms, room)
-		}
-		rows.Close()
+		rooms := Db2.Chatrooms()
 		output, err := json.MarshalIndent(&rooms, "", "\t\t")
 		if err != nil {
 			panic(err)

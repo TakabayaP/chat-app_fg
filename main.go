@@ -8,7 +8,33 @@ import (
 	_ "github.com/lib/pq"
 )
 
+type Database interface {
+	Chatrooms() []Chatroom
+}
+
 var Db *sql.DB
+var Db2 Database
+
+type chatroomPostgresDb struct{}
+
+func (*chatroomPostgresDb) Chatrooms() []Chatroom {
+	rows, err := Db.Query("SELECT id, uuid, name FROM chatrooms ORDER BY id ASC")
+	var rooms []Chatroom
+	if err != nil {
+		panic(err)
+	}
+	for rows.Next() {
+		room := Chatroom{}
+		err = rows.Scan(&room.Id, &room.Uuid, &room.Name)
+		if err != nil {
+			panic(err)
+		}
+		rooms = append(rooms, room)
+	}
+	fmt.Println(rooms)
+	rows.Close()
+	return rooms
+}
 
 func init() {
 	var err error
@@ -21,11 +47,10 @@ func init() {
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", index)
-	mux.HandleFunc("/chatrooms",handleChatroomSelect)
+	Db2 = &chatroomPostgresDb{}
+	mux.HandleFunc("/chatrooms", handleChatroomSelect)
 	mux.HandleFunc("/chat", chat)
-	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		handleWs(w, r)
-	})
+	mux.HandleFunc("/ws", handleWs)
 
 	go handleMessages()
 	server := &http.Server{
