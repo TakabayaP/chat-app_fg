@@ -1,4 +1,4 @@
-package main
+package chat
 
 import (
 	"database/sql"
@@ -48,7 +48,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", index)
 	Db2 = &chatroomPostgresDb{}
-	mux.HandleFunc("/chatrooms", handleChatroomSelect)
+	mux.HandleFunc("/chatrooms", handleChatroom)
 	mux.HandleFunc("/chat", chat)
 	mux.HandleFunc("/ws", handleWs)
 
