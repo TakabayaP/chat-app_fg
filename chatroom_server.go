@@ -1,9 +1,10 @@
-package main
+package chat
 
 import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -43,15 +44,34 @@ func createUUID() (uuid string) {
 	return
 }
 
-func handleChatroomSelect(w http.ResponseWriter, r *http.Request) {
+func handleChatroom(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		rooms := Db2.Chatrooms()
-		output, err := json.MarshalIndent(&rooms, "", "\t\t")
-		if err != nil {
-			panic(err)
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Add("Access-Control-Allow-Origin", "*")
-		w.Write(output)
+		handleChatroomGet(w, r)
+	} else if r.Method == "POST" {
+		handleChatroomCreate(w, r)
 	}
+}
+func handleChatroomGet(w http.ResponseWriter, r *http.Request) {
+	rooms := Db2.Chatrooms()
+	output, err := json.MarshalIndent(&rooms, "", "\t\t")
+	if err != nil {
+		log.Fatal(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Write(output)
+}
+
+func handleChatroomCreate(w http.ResponseWriter, r *http.Request) {
+	room := &Chatroom{}
+	body, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(body, &room)
+	rooms := Db2.Chatrooms()
+	output, err := json.MarshalIndent(&rooms, "", "\t\t")
+	if err != nil {
+		log.Fatal(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Write(output)
 }
