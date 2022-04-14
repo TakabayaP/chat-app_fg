@@ -27,14 +27,20 @@ func TestChatroomSelectHandler(t *testing.T) {
 	}
 }
 
-func getterHandlerTester(handler func(http.ResponseWriter, *http.Request), address string) http.Response {
+func getHandlerTester(handler func(http.ResponseWriter, *http.Request), address string) http.Response {
 	req := httptest.NewRequest(http.MethodGet, address, nil)
 	rec := httptest.NewRecorder()
 	handler(rec, req)
 
 	return *rec.Result()
 }
+func postHandlerTester(handler func(http.ResponseWriter, *http.Request), address string) http.Response {
 
+	req := httptest.NewRequest(http.MethodGet, address, nil)
+	rec := httptest.NewRecorder()
+	handler(rec, req)
+	return *rec.Result()
+}
 func TestChatroomCreateHandler(t *testing.T) {
 	Db2 := &mockChatroomDb{}
 }
