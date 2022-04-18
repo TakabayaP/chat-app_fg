@@ -1,4 +1,4 @@
-package chat
+package main
 
 type chatDb interface {
 	Chat()
