@@ -8,12 +8,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type Database interface {
+type ChatroomDatabase interface {
 	Chatrooms() []Chatroom
+	CreateRoom(Chatroom) []Chatroom
 }
 
 var Db *sql.DB
-var Db2 Database
+var Db2 ChatroomDatabase
 
 type chatroomPostgresDb struct{}
 
@@ -35,7 +36,19 @@ func (*chatroomPostgresDb) Chatrooms() []Chatroom {
 	rows.Close()
 	return rooms
 }
-
+func (d *chatroomPostgresDb) CreateRoom(chatroom Chatroom) []Chatroom {
+	statement := `insert into chatrooms ( uuid, name) values ($1, $2) returning id`
+	stmt, err := Db.Prepare(statement)
+	if err != nil {
+		panic(err)
+	}
+	defer stmt.Close()
+	err = stmt.QueryRow(createUUID(), chatroom.Name).Scan(&chatroom.Id)
+	if err != nil {
+		panic(err)
+	}
+	return d.Chatrooms()
+}
 func init() {
 	var err error
 	Db, err = sql.Open("postgres", "dbname=chat sslmode=disable")
