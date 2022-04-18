@@ -66,6 +66,7 @@ func handleChatroomCreate(w http.ResponseWriter, r *http.Request) {
 	room := &Chatroom{}
 	body, _ := ioutil.ReadAll(r.Body)
 	json.Unmarshal(body, &room)
+	Db2.CreateRoom(*room)
 	rooms := Db2.Chatrooms()
 	output, err := json.MarshalIndent(&rooms, "", "\t\t")
 	if err != nil {
